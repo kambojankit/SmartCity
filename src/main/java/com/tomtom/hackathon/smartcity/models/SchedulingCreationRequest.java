@@ -3,9 +3,7 @@ package com.tomtom.hackathon.smartcity.models;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.ZonedDateTime;
 
 @Getter
@@ -16,9 +14,10 @@ import java.time.ZonedDateTime;
 public class SchedulingCreationRequest {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String userName;
     private String latAndLong;
     private String address;
-    private ZonedDateTime timeWindow;
+    private String tokenNumber;
 }
