@@ -9,15 +9,21 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "SCHEDULING_INFO")
+@Table(name = "BOOKING_DETAILS")
 
-public class SchedulingCreationRequest {
+public class BookingRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String userName;
+    private String email;
+    private String mobileNumber;
     private String latAndLong;
     private String address;
+    private String city;
+    private String state;
+    private String zipCode;
     private String tokenNumber;
+    private String requestStatus;
 }

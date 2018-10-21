@@ -1,34 +1,37 @@
 package com.tomtom.hackathon.smartcity.services;
 
-import com.tomtom.hackathon.smartcity.models.SchedulingCreationRequest;
-import com.tomtom.hackathon.smartcity.repositories.CreateScheduleRepository;
+import com.tomtom.hackathon.smartcity.models.BookingRequest;
+import com.tomtom.hackathon.smartcity.models.RequestStatus;
+import com.tomtom.hackathon.smartcity.repositories.BookingRepository;
 import com.tomtom.hackathon.smartcity.repositories.CreateTimeSlotRepository;
-import com.tomtom.hackathon.smartcity.views.SchedulingRequestView;
+import com.tomtom.hackathon.smartcity.views.BookingCancelView;
+import com.tomtom.hackathon.smartcity.views.BookingHistoryView;
+import com.tomtom.hackathon.smartcity.views.BookingRequestView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
-public class CreateScheduleService {
+@Transactional
+public class BookingService {
 
     @Autowired
-    private CreateScheduleRepository createScheduleRepository;
+    private BookingRepository bookingRepository;
 
     @Autowired
-    private CreateScheduleService createScheduleService;
+    private BookingService bookingService;
 
     @Autowired
     private CreateTimeSlotRepository createTimeSlotRepository;
@@ -44,35 +47,54 @@ public class CreateScheduleService {
     @Value("${tomtom.url.latAndLong}")
     private String TOMTOM_REST_URL;
 
-    public SchedulingRequestView createSchedule(SchedulingCreationRequest schedulingCreationRequest){
+    /**
+     * creating booking for requested user.
+     * @param bookingRequest
+     * @return
+     */
+    public BookingRequestView createBooking(BookingRequest bookingRequest){
 
         try {
             String urlResult = getUrlResult(
-                              this.getValidUrl(TOMTOM_REST_URL,schedulingCreationRequest));
+                              this.getValidUrl(TOMTOM_REST_URL, bookingRequest));
             String latAndLong = getLatAndLong(urlResult);
-            schedulingCreationRequest.setLatAndLong(latAndLong);
 
-            return new SchedulingRequestView(createScheduleRepository.save(schedulingCreationRequest));
+            bookingRequest.setLatAndLong(latAndLong);
+            bookingRequest.setRequestStatus(RequestStatus.ACTIVE.getRequestStatus());
+
+            return new BookingRequestView(bookingRepository.save(bookingRequest));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return new SchedulingRequestView(null);
+        return new BookingRequestView(null);
     }
 
-    public List<SchedulingRequestView> getSchedulingData(){
-        ArrayList<SchedulingRequestView> listOfScheduleData = new ArrayList<>();
-        createScheduleRepository.
+    /**
+     * retrieving the booking history and sending to the user.
+     * @return
+     */
+
+    public List<BookingHistoryView> getBookingHistory(){
+        ArrayList<BookingHistoryView> listOfScheduleData = new ArrayList<>();
+
+        bookingRepository.
                 findAll().
-                forEach(e ->listOfScheduleData.add(new SchedulingRequestView(e)));
+                forEach(e ->listOfScheduleData.add(new BookingHistoryView(e)));
 
         this.getTimeWindow();
 
-        for (SchedulingRequestView viewData:listOfScheduleData) {
+        for (BookingHistoryView viewData:listOfScheduleData) {
             viewData.setTimeWindow(mapOfTimeWindow.get(viewData.getTokenNumber()));
         }
+
         return listOfScheduleData;
+    }
+
+    public String cancelUserRequest(int userId){
+        bookingRepository.updateBookingRequest(RequestStatus.CANCEL.getRequestStatus(),userId);
+        return "cancellation is done for bookingId "+ userId;
     }
 
     public  void getTimeWindow(){
@@ -83,17 +105,18 @@ public class CreateScheduleService {
                         e -> mapOfTimeWindow.put(e.getTokenNumber(),e.getTimeWindow())
                 );
     }
+
     /**
      *
      * @param url -- tomtom url to search for given address.
-     * @param schedulingCreationRequest
+     * @param bookingRequest
      * @return
      * getValidUrl method will return the url after performing some replace operation like replacing space with %20.
      */
 
-    public String getValidUrl(String url,SchedulingCreationRequest schedulingCreationRequest){
+    public String getValidUrl(String url,BookingRequest bookingRequest){
 
-        url = url.replaceAll("address",schedulingCreationRequest.getAddress())
+        url = url.replaceAll("address", bookingRequest.getAddress())
                  .replaceAll("code",this.countryCode)
                  .replaceAll("apiKey",this.apiKey)
                  .replaceAll("\\s+","%20");
