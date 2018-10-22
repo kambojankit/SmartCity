@@ -21,9 +21,11 @@ public class BookingRequest {
     private String mobileNumber;
     private String latAndLong;
     private String address;
+    private String subRegion;
     private String city;
     private String state;
     private String zipCode;
     private String tokenNumber;
     private String requestStatus;
+    private String dateOfRequest;
 }

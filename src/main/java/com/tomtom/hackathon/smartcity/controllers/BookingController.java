@@ -23,11 +23,11 @@ public class BookingController {
 
         BookingRequestView bookingRequestView = bookingService.createBooking(bookingRequest);
 
-        if(Objects.isNull(bookingRequest)){
-            return new ResponseEntity("Couldn't fetch data from database", HttpStatus.EXPECTATION_FAILED);
+        if(Objects.isNull(bookingRequestView)){
+            return new ResponseEntity("unable to process the request", HttpStatus.EXPECTATION_FAILED);
         }
         else
-            return new ResponseEntity(bookingService.createBooking(bookingRequest), HttpStatus.CREATED);
+            return new ResponseEntity(bookingRequestView, HttpStatus.CREATED);
     }
     @GetMapping("/get/history")
     public ResponseEntity getBooking(){

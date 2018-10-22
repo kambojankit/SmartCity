@@ -21,6 +21,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -47,6 +50,9 @@ public class BookingService {
     @Value("${tomtom.url.latAndLong}")
     private String TOMTOM_REST_URL;
 
+    @Value("${date.format}")
+    private String dateFormat;
+
     /**
      * creating booking for requested user.
      * @param bookingRequest
@@ -54,21 +60,28 @@ public class BookingService {
      */
     public BookingRequestView createBooking(BookingRequest bookingRequest){
 
+        BookingRequestView bookingRequestView = null;
         try {
             String urlResult = getUrlResult(
                               this.getValidUrl(TOMTOM_REST_URL, bookingRequest));
-            String latAndLong = getLatAndLong(urlResult);
 
-            bookingRequest.setLatAndLong(latAndLong);
+            bookingRequest.setLatAndLong(this.getLatAndLong(urlResult));
             bookingRequest.setRequestStatus(RequestStatus.ACTIVE.getRequestStatus());
+            bookingRequest.setDateOfRequest(this.getFormattedDate(bookingRequest.getDateOfRequest()));
 
-            return new BookingRequestView(bookingRepository.save(bookingRequest));
+            if(bookingRepository.findBookingByTokenAndDate(
+                    bookingRequest.getTokenNumber(),bookingRequest.getDateOfRequest(),
+                    bookingRequest.getMobileNumber()).size()==0)
+                bookingRequestView = new BookingRequestView(bookingRepository.save(bookingRequest));
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        return new BookingRequestView(null);
+        return bookingRequestView;
     }
 
     /**
@@ -187,6 +200,15 @@ public class BookingService {
     public static JSONObject getJsonObj(String jsonString) throws JSONException {
 
         return new JSONObject(jsonString);
+    }
+
+    public String getFormattedDate(String date) throws ParseException {
+
+        DateFormat dateFormat = new SimpleDateFormat(this.dateFormat);
+        return dateFormat.format(dateFormat.parse(date)).toString();
+        /*return   dateFormat
+                .replaceAll("-","")
+                .replaceAll("/","");*/
     }
 
 }
