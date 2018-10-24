@@ -17,4 +17,7 @@ public interface BookingRepository extends CrudRepository<BookingRequest,Long>{
 
     @Query("SELECT b FROM BookingRequest b WHERE b.tokenNumber = ?1 AND b.dateOfRequest = ?2 AND b.mobileNumber = ?3")
     List<BookingRequest> findBookingByTokenAndDate(String tokenNumber, String dateOfRequest,String mobileNumber);
+
+    @Query("SELECT b FROM BookingRequest b WHERE b.tokenNumber = ?1 AND b.subRegion = ?2 AND b.dateOfRequest = ?3")
+    List<BookingRequest> findBookingByRegionAndByToken(String tokenNumber, String subRegion,String dateOfRequest);
 }
