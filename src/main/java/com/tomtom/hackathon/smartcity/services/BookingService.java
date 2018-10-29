@@ -34,9 +34,6 @@ public class BookingService {
     private BookingRepository bookingRepository;
 
     @Autowired
-    private BookingService bookingService;
-
-    @Autowired
     private CreateTimeSlotRepository createTimeSlotRepository;
 
     private static Map<String,String> mapOfTimeWindow = new HashMap<>();
@@ -62,8 +59,7 @@ public class BookingService {
 
         BookingRequestView bookingRequestView = null;
         try {
-            String urlResult = getUrlResult(
-                              this.getValidUrl(TOMTOM_REST_URL, bookingRequest));
+            String urlResult = this.getUrlResult(this.getValidUrl(TOMTOM_REST_URL, bookingRequest));
 
             bookingRequest.setLatAndLong(this.getLatAndLong(urlResult));
             bookingRequest.setRequestStatus(RequestStatus.ACTIVE.getRequestStatus());
@@ -127,7 +123,7 @@ public class BookingService {
      * getValidUrl method will return the url after performing some replace operation like replacing space with %20.
      */
 
-    public String getValidUrl(String url,BookingRequest bookingRequest){
+    private String getValidUrl(String url,BookingRequest bookingRequest){
 
         url = url.replaceAll("address", bookingRequest.getAddress())
                  .replaceAll("code",this.countryCode)
@@ -159,7 +155,7 @@ public class BookingService {
      * getUrlResult method will return json data fetched from url.
      */
 
-    public static String getUrlResult(String restUrl) throws IOException {
+    private String getUrlResult(String restUrl) throws IOException {
 
         HttpsURLConnection urlConnection = openConnection(restUrl);
         BufferedReader bf = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));

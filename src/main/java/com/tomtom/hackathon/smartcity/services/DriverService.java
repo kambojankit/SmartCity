@@ -4,6 +4,8 @@ import com.tomtom.hackathon.smartcity.models.DriverMappingDetails;
 import com.tomtom.hackathon.smartcity.repositories.DriverRepository;
 import com.tomtom.hackathon.smartcity.views.BookingHistoryView;
 import com.tomtom.hackathon.smartcity.views.DriverEntityView;
+import com.tomtom.hackathon.smartcity.views.DriverRoutingView;
+import com.tomtom.hackathon.smartcity.views.RoutingView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,15 +33,15 @@ public class DriverService {
      * return all the routes which have been processed by drivers.
      * @return
      */
-    public List<DriverEntityView> findAllRoutes(){
+    public List<DriverRoutingView> findAllRoutesServedByDriver(String emailId){
 
         // TODO need to write the logic for finding route history.
 
-        List<DriverEntityView> listOfRoutes = new ArrayList<>();
+        List<DriverRoutingView> listOfRoutes = new ArrayList<>();
 
         driverRepository.
-                findAll().
-                forEach(e ->listOfRoutes.add(new DriverEntityView(e)));
+                findRouteByDriverEmail(emailId).
+                forEach(e ->listOfRoutes.add(new DriverRoutingView(e)));
 
         return listOfRoutes;
     }

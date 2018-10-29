@@ -33,8 +33,8 @@ public class DriverController {
     }
 
     @GetMapping("/get/route/history")
-    public ResponseEntity getRouteHistory(){
-        return new ResponseEntity(driverService.findAllRoutes(), HttpStatus.CREATED);
+    public ResponseEntity getDriverRouteHistory(@RequestParam("emailId") String emailid){
+        return new ResponseEntity(driverService.findAllRoutesServedByDriver(emailid), HttpStatus.CREATED);
     }
 
     @GetMapping("/get/drivers")
