@@ -18,9 +18,10 @@ public class RoutingController {
     private RoutingService routingService;
 
     @GetMapping("/routes/")
-    public ResponseEntity getroutes(@RequestParam("driverName") String driverName,
+    public ResponseEntity getroutes(@RequestParam("emailId") String emailId,
+                                    @RequestParam("driverName") String driverName,
                                      @RequestParam("tokenNumber") String tokenNumber ){
-        return new ResponseEntity(routingService.getRoutingRequest(driverName,tokenNumber), HttpStatus.CREATED);
+        return new ResponseEntity(routingService.getRoutingRequest(emailId,driverName,tokenNumber), HttpStatus.CREATED);
     }
 }
 

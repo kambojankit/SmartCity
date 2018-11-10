@@ -12,6 +12,7 @@ import javax.persistence.*;
 
 public class DriverMappingDetails {
     @Id
+    private String emailId;
     private String driverName;
     private String vehicleNumber;
     private String subRegion;

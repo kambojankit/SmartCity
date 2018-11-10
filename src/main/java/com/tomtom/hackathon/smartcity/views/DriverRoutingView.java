@@ -4,16 +4,15 @@ import com.tomtom.hackathon.smartcity.models.RoutingRequest;
 
 import java.util.List;
 
-public class RoutingView {
-
+public class DriverRoutingView {
     private RoutingRequest routingRequest;
 
     private String driverName;
-    private List<String> listOfLatAndLong;
+    private String listOfWayPoints;
     private String emailId;
 
 
-    public RoutingView(RoutingRequest routingRequest){ this.routingRequest = routingRequest;};
+    public DriverRoutingView(RoutingRequest routingRequest){ this.routingRequest = routingRequest;};
 
     public String getEmailId() {
         return routingRequest.getEmailId();
@@ -23,11 +22,7 @@ public class RoutingView {
         return routingRequest.getDriverName();
     }
 
-    public List<String> getListOfLatAndLong() {
-        return listOfLatAndLong;
-    }
-    public void setListOfLatAndLong(List<String> listOfLatAndLong){
-
-        this.listOfLatAndLong = listOfLatAndLong;
+    public String getListOfWayPoints() {
+        return routingRequest.getWayPoints();
     }
 }

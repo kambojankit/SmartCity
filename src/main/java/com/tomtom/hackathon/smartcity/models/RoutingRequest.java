@@ -15,6 +15,7 @@ public class RoutingRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+    private String emailId;
     private String driverName;
     private String tokenNumber;
     private String wayPoints;

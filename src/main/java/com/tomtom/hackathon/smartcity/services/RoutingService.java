@@ -34,14 +34,14 @@ public class RoutingService {
     @Value("${date.format}")
     private String dateFormat;
 
-    public List<String> getRoutingRequest(String driverName,String tokenNumber){
+    public List<String> getRoutingRequest(String emailId,String driverName,String tokenNumber){
 
         List<BookingRequest> listOfBooking = null;
         List<String> listOfLatAndLong = null;
         //TODO : how to create model object. is it a good way to create it using new keyword ?
 
         RoutingRequest routingRequest = new RoutingRequest();
-        DriverMappingDetails driverMappingDetails = driverRepository.findRegion(driverName);
+        DriverMappingDetails driverMappingDetails = driverRepository.findRegion(emailId);
 
         listOfBooking = bookingRepository.findBookingByRegionAndByToken(
                         tokenNumber,
@@ -51,11 +51,12 @@ public class RoutingService {
         listOfLatAndLong = this.getListOfLatAndLong(listOfBooking);
 
         routingRepository.save(
-                              this.setRoutingParam(
-                              driverName,
-                              tokenNumber,
-                              routingRequest,
-                              this.converListToString(listOfLatAndLong)
+                               this.setRoutingParam(
+                               emailId,
+                               driverName,
+                               tokenNumber,
+                               routingRequest,
+                               this.converListToString(listOfLatAndLong)
                               )
         );
         return listOfLatAndLong;
@@ -80,10 +81,11 @@ public class RoutingService {
       return   String.join(",",listOfLatAndLong);
     }
 
-    public RoutingRequest setRoutingParam(String driverName,String tokenNumber,
+    public RoutingRequest setRoutingParam(String emailId,String driverName,String tokenNumber,
                                             RoutingRequest routingRequest,String wayPoints){
 
         routingRequest.setDriverName(driverName);
+        routingRequest.setEmailId(emailId);
         routingRequest.setTokenNumber(tokenNumber);
         routingRequest.setWayPoints(wayPoints);
         routingRequest.setDateOfPickup(this.getCurrentDate());
